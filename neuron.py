@@ -18,45 +18,9 @@ class Neuron:
         if this is greater than or equal to 0 the neuron activates"""
         active_weights = [self.weights[i] * inputs[i] for i in
                           range(len(self.weights))]  # A list of all the weights where the input is True
-        self.output = 0
-        if sum(active_weights) + self.bias >= 0:
-            self.output = 1
+        self.output = 1 / (1 + math.exp(-(sum(active_weights) + self.bias)))
 
-        return 1 / (1 + math.exp(-(sum(active_weights) + self.bias)))
-
-    def error(self, training_set):
-        """Given the traning set containing all inputs and expected outputs, this function
-        calculates the Mean Squared Error. The formula of MSE is  Σ | d – y |^2 / n, where
-        d is the output being predicted, y the predicted output, and n the size of total predictions"""
-        sigma = 0
-        for data in training_set:  # calculate sigma d - y ^ 2
-            inputs = data[0]
-            exp_outcome = data[1]  # d
-            output = self.activate(inputs)  # calculate y
-
-            sigma += (exp_outcome - output) ** 2  # sum of each d - y ^ 2 instance
-
-        mse = sigma / len(
-            training_set)  # each value in training_set contains one expected prediction, meaning that the lengts of the training set is the same as the size of total predictions
-        return mse
-
-    def update(self, training_set, epochs=1, learning_rate=1.0):
-        """Given the traning set containing all inputs and expected outputs, epochs that determines
-        how many times the updating is looped through the training set, and learning rate. This function
-        updates the parameters of the neuron towards a more accurate one in line with the expected/needed
-        output of the neuron"""
-        for current_epoch in range(epochs):
-            for data in training_set:  # training set contains the input and expected output
-                inputs = data[0]
-                exp_outcome = data[1]
-
-                output = self.activate(inputs)  # calculate y
-                e = exp_outcome - output  # calculate error, if 0 all other calculations add no change
-
-                for weight_index in range(len(self.weights)):
-                    self.weights[weight_index] += (learning_rate * e * inputs[
-                        weight_index])  # calculate weight delta for each weight and add for each weight
-                self.bias += (learning_rate * e)  # calculate bias delta and add to bias
+        return self.output
 
     def __str__(self):
         """Rerurns a string that tell the information of the neuron
